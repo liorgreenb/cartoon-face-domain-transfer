@@ -26,6 +26,7 @@ from urllib.request import urlretrieve
 
 import numpy as np
 from PIL import Image
+from constants import DOMAIN_B_FOLDER
 
 DATASET_CELEBA_NAME = 'celeba'
 DATASET_MNIST_NAME = 'mnist'
@@ -395,4 +396,4 @@ class DLProgress(tqdm):
 
 if __name__ == '__main__':
   prepare_data_dir()
-  download_extract(DATASET_CELEBA_NAME, './data')
+  download_extract(DATASET_CELEBA_NAME, DOMAIN_B_FOLDER)
