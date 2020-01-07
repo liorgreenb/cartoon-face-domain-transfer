@@ -30,10 +30,6 @@ from PIL import Image
 DATASET_CELEBA_NAME = 'celeba'
 DATASET_MNIST_NAME = 'mnist'
 
-parser = argparse.ArgumentParser(description='Download dataset for DCGAN.')
-parser.add_argument('datasets', metavar='N', type=str, nargs='+', choices=['celebA', 'lsun', 'mnist'],
-           help='name of dataset to download [celebA, lsun, mnist]')
-
 def download(url, dirpath):
   filename = url.split('/')[-1]
   filepath = os.path.join(dirpath, filename)
@@ -398,12 +394,5 @@ class DLProgress(tqdm):
         self.last_block = block_num
 
 if __name__ == '__main__':
-  args = parser.parse_args()
   prepare_data_dir()
-
-  if any(name in args.datasets for name in ['CelebA', 'celebA', 'celebA']):
-    download_extract(DATASET_CELEBA_NAME, './data')
-  if 'lsun' in args.datasets:
-    download_lsun('./data')
-  if 'mnist' in args.datasets:
-    download_mnist('./data')
+  download_extract(DATASET_CELEBA_NAME, './data')
