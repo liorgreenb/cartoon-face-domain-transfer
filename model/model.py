@@ -1,6 +1,5 @@
 import itertools
 import torch
-from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 
 import pytorch_lightning as pl
@@ -9,19 +8,29 @@ from data.image_dataset_loader import ImageDataset
 from model.discriminator import Discriminator
 from model.generator import GeneratorResNet
 
+class LambdaLRSteper:
+    def __init__(self, n_epochs, offset, decay_start_epoch):
+        assert (n_epochs - decay_start_epoch) > 0, "Decay must start before the training session ends!"
+        self.n_epochs = n_epochs
+        self.offset = offset
+        self.decay_start_epoch = decay_start_epoch
+
+    def step(self, epoch):
+        return 1.0 - max(0, epoch + self.offset - self.decay_start_epoch) / (self.n_epochs - self.decay_start_epoch)
 
 class Model(pl.LightningModule):
 
-    def __init__(self, hyperparams):
+    def __init__(self, hyperparams, device):
         super(Model, self).__init__()
 
         self.hyperparams = hyperparams
+        self.device = device
 
         self.num_res_blocks = hyperparams.num_res_blocks
         self.input_shape = hyperparams.input_shape
         self.learning_rate = hyperparams.learning_rate
-        self.B1 = hyperparams.B1
-        self.B2 = hyperparams.B1
+        self.B1 = hyperparams.b1
+        self.B2 = hyperparams.b1
         self.n_epochs = hyperparams.n_epochs
         self.start_epoch = hyperparams.start_epoch
         self.epoch_decay = hyperparams.epoch_decay
@@ -56,8 +65,8 @@ class Model(pl.LightningModule):
         loss_type = None
 
         # Set model input
-        real_A = batch["A"]
-        real_B = batch["B"]
+        real_A = batch["A"].to(self.device)
+        real_B = batch["B"].to(self.device)
 
         # -------------------------------
         #  Train Generators (G_AB, G_BA)
@@ -157,13 +166,13 @@ class Model(pl.LightningModule):
 
         # Learning rate update schedulers
         lr_scheduler_G = torch.optim.lr_scheduler.LambdaLR(
-            optimizer_G, lr_lambda=LambdaLR(self.n_epochs, self.start_epoch, self.epoch_decay).step
+            optimizer_G, lr_lambda=LambdaLRSteper(self.n_epochs, self.start_epoch, self.epoch_decay).step
         )
         lr_scheduler_D_A = torch.optim.lr_scheduler.LambdaLR(
-            optimizer_D_A, lr_lambda=LambdaLR(self.n_epochs, self.start_epoch, self.epoch_decay).step
+            optimizer_D_A, lr_lambda=LambdaLRSteper(self.n_epochs, self.start_epoch, self.epoch_decay).step
         )
         lr_scheduler_D_B = torch.optim.lr_scheduler.LambdaLR(
-            optimizer_D_B, lr_lambda=LambdaLR(self.n_epochs, self.start_epoch, self.epoch_decay).step
+            optimizer_D_B, lr_lambda=LambdaLRSteper(self.n_epochs, self.start_epoch, self.epoch_decay).step
         )
 
         return [optimizer_G, optimizer_D_A, optimizer_D_B], [lr_scheduler_G, lr_scheduler_D_A, lr_scheduler_D_B]

@@ -12,7 +12,8 @@ def main(hyperparams):
 
     :type hyperparams: object
     """
-    model = Model(hyperparams)
+    device = torch.device('cuda:0' if torch.cuda.is_available() and hyperparams.gpu else 'cpu')
+    model = Model(hyperparams, device)
 
     trainer = Trainer(
         max_nb_epochs=1 if hyperparams.debug else hyperparams.n_epochs,
