@@ -38,7 +38,7 @@ def download_celeba(data_path):
     """
     database_name = 'celeba'
     extract_path = data_path
-    save_path = os.path.join(data_path, f'{database_name}.zip')
+    save_path = f'{database_name}.zip'
 
     if not os.path.exists(save_path):
         with DLProgress(unit='B', unit_scale=True, miniters=1, desc=f'Downloading {database_name}') as pbar:
