@@ -94,7 +94,7 @@ venv.bak/
 .spyderproject
 .spyproject
 
-# Rope project settings
+# Rope project settingsDATASET_SIZE
 .ropeproject
 
 # mkdocs documentation
@@ -103,3 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 .idea
+
+celeba
+ready_celeba
+cartoonset10k
+ready_cartoonset10k
