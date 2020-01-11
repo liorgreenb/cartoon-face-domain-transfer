@@ -5,7 +5,7 @@ import zipfile
 
 def create_folder_if_not_exist(path):
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path, exist_ok=True)
 
 
 def clear_folder(path):
