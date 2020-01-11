@@ -43,6 +43,5 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', default=BATCH_SIZE, type=int, help="")
 
     hyperparams = parser.parse_args()
-    hyperparams.input_shape = tuple(hyperparams.input_shape.split(","))
 
     main(hyperparams)

@@ -5,6 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 
 import pytorch_lightning as pl
+from torchvision.utils import make_grid
 
 from data.image_dataset_loader import ImageDataset
 from model.discriminator import Discriminator
@@ -134,6 +135,9 @@ class Model(pl.LightningModule):
         })
 
     def validation_step(self, batch, batch_nb):
+        if batch_nb == 0:
+            self.sample_network_images(batch)
+
         loss_data = self.training_step(batch, batch_nb)
 
         return {
@@ -198,3 +202,19 @@ class Model(pl.LightningModule):
             shuffle=True,
             # num_workers=multiprocessing.cpu_count(),
         )
+
+    def sample_network_images(self, batch):
+        """Saves a generated sample from the test set"""
+        real_A = batch["A"].to(self.device)
+        real_B = batch["B"].to(self.device)
+        fake_B, fake_A = self.forward(real_A, real_B)
+
+        # Arrange images along x-axis
+        real_A = make_grid(real_A, nrow=5, normalize=True)
+        real_B = make_grid(real_B, nrow=5, normalize=True)
+        fake_A = make_grid(fake_A, nrow=5, normalize=True)
+        fake_B = make_grid(fake_B, nrow=5, normalize=True)
+
+        # Arrange images along y-axis
+        image_grid = torch.cat((real_A, fake_B, real_B, fake_A), 1)
+        self.logger.experiment.add_image(f'sample_images_{self.current_epoch}', image_grid, 0)
