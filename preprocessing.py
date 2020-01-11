@@ -1,13 +1,15 @@
 import argparse
 
-from constants import DOMAIN_A_READY, DOMAIN_B_READY, MODEL_INPUT_SIZE
+from constants import DOMAIN_A_READY, DOMAIN_B_READY, MODEL_INPUT_SIZE, MODE_TRAIN, MODE_TEST, MODE_VAL, \
+    get_domain_folder_by_mode
 from data.image_preprocessor import preprocess
 from services import clear_folder
 
 
 def prepare_data_ready_folders():
-    clear_folder(DOMAIN_A_READY)
-    clear_folder(DOMAIN_B_READY)
+    for domain_ready_folder in [DOMAIN_A_READY, DOMAIN_B_READY]:
+        for mode in [MODE_TRAIN, MODE_VAL, MODE_TEST]:
+            clear_folder(get_domain_folder_by_mode(domain_ready_folder, mode))
 
 
 def main(args):

@@ -3,7 +3,7 @@ from pytorch_lightning import Trainer
 from test_tube import HyperOptArgumentParser
 
 from hyperparams import BATCH_SIZE, NUM_RES_BLOCKS, INPUT_SHAPE, N_EPOCHS, EPOCH_DECAY, LEARNING_RATE, START_EPOCH, B1, \
-    B2, LAMBDA_CYCLE_LOSS, LAMBDA_IDENTITY_LOSS
+    B2, LAMBDA_CYCLE_LOSS, LAMBDA_IDENTITY_LOSS, ACCUMULATE_GRAD_BATCHES
 from model.model import Model
 
 
@@ -19,6 +19,7 @@ def main(hyperparams):
         max_nb_epochs=1 if hyperparams.debug else hyperparams.n_epochs,
         gpus=1 if torch.cuda.is_available() and hyperparams.gpu else 0,
         train_percent_check=0.01 if hyperparams.debug else 1.0,
+        # accumulate_grad_batches= hyperparams.accumulate_grad_batches
     )
 
     trainer.fit(model)
@@ -41,6 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_cycle_loss', default=LAMBDA_CYCLE_LOSS, type=float, help="")
     parser.add_argument('--lambda_identity_loss', default=LAMBDA_IDENTITY_LOSS, type=float, help="")
     parser.add_argument('--batch_size', default=BATCH_SIZE, type=int, help="")
+    parser.add_argument('--accumulate_grad_batches', default=ACCUMULATE_GRAD_BATCHES, type=int, help="")
 
     hyperparams = parser.parse_args()
 

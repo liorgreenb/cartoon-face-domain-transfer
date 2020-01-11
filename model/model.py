@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from torchvision.utils import make_grid
 
+from constants import MODE_TRAIN, MODE_VAL, MODE_TEST
 from data.image_dataset_loader import ImageDataset
 from model.discriminator import Discriminator
 from model.generator import GeneratorResNet
@@ -23,23 +24,23 @@ class LambdaLRSteper:
 
 class Model(pl.LightningModule):
 
-    def __init__(self, hyperparams, device):
+    def __init__(self, hparams, device):
         super(Model, self).__init__()
 
-        self.hyperparams = hyperparams
+        self.hparams = hparams
         self.device = device
 
-        self.num_res_blocks = hyperparams.num_res_blocks
-        self.input_shape = hyperparams.input_shape
-        self.learning_rate = hyperparams.learning_rate
-        self.B1 = hyperparams.b1
-        self.B2 = hyperparams.b1
-        self.n_epochs = hyperparams.n_epochs
-        self.start_epoch = hyperparams.start_epoch
-        self.epoch_decay = hyperparams.epoch_decay
-        self.batch_size = hyperparams.batch_size
-        self.lambda_cycle_loss = hyperparams.lambda_cycle_loss
-        self.lambda_identity_loss = hyperparams.lambda_identity_loss
+        self.num_res_blocks = hparams.num_res_blocks
+        self.input_shape = hparams.input_shape
+        self.learning_rate = hparams.learning_rate
+        self.B1 = hparams.b1
+        self.B2 = hparams.b1
+        self.n_epochs = hparams.n_epochs
+        self.start_epoch = hparams.start_epoch
+        self.epoch_decay = hparams.epoch_decay
+        self.batch_size = hparams.batch_size
+        self.lambda_cycle_loss = hparams.lambda_cycle_loss
+        self.lambda_identity_loss = hparams.lambda_identity_loss
 
         self.G_AB = GeneratorResNet(self.input_shape, self.num_res_blocks)
         self.G_BA = GeneratorResNet(self.input_shape, self.num_res_blocks)
@@ -148,7 +149,7 @@ class Model(pl.LightningModule):
 
     def validation_end(self, outputs):
         avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        return {'avg_val_loss': avg_loss}
+        return {'val_loss': avg_loss}
 
     # def test_step(self, batch, batch_nb):
     #     # OPTIONAL
@@ -185,19 +186,19 @@ class Model(pl.LightningModule):
 
     @pl.data_loader
     def train_dataloader(self):
-        return self.create_data_loader()
+        return self.create_data_loader(MODE_TRAIN)
 
     @pl.data_loader
     def val_dataloader(self):
-        return self.create_data_loader()
+        return self.create_data_loader(MODE_VAL)
 
     @pl.data_loader
     def test_dataloader(self):
-        return self.create_data_loader()
+        return self.create_data_loader(MODE_TEST)
 
-    def create_data_loader(self):
+    def create_data_loader(self, mode):
         return DataLoader(
-            ImageDataset(),
+            ImageDataset(mode),
             batch_size=self.batch_size,
             shuffle=True,
             # num_workers=multiprocessing.cpu_count(),
