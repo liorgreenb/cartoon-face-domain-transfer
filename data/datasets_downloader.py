@@ -4,8 +4,13 @@ import shutil
 from urllib.request import urlretrieve
 from tqdm import tqdm
 
-from constants import CELEB_A_URL
+from constants import CELEB_A_URL, CELEB_A_HASH
 from services import _unzip
+
+
+def download_cartoonset10k():
+    os.system("gsutil cp gs://cartoonset_public_files/cartoonset10k.tgz .")
+    os.system("tar -xvzf cartoonset10k.tgz")
 
 
 def download_celeba(data_path):
