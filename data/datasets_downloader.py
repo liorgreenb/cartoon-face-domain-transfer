@@ -9,6 +9,7 @@ from services import _unzip
 
 
 def download_cartoonset10k():
+    print("downloading cartoonset10k dataset")
     os.system("gsutil cp gs://cartoonset_public_files/cartoonset10k.tgz .")
     os.system("tar -xvzf cartoonset10k.tgz")
 
@@ -18,6 +19,7 @@ def download_celeba(data_path):
     Download and extract database
     :param data_path:
     """
+    print("downloading celeba dataset")
     database_name = 'celeba'
     extract_path = data_path
     save_path = f'{database_name}.zip'
