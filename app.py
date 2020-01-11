@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', default=True, type=bool, help="")
 
     parser.add_argument('--num_res_blocks', default=NUM_RES_BLOCKS, type=int, help="")
-    parser.add_argument('--input_shape', default=INPUT_SHAPE, type=str, help="")
+    parser.add_argument('--input_shape', default=INPUT_SHAPE, type=tuple, help="")
     parser.add_argument('--n_epochs', default=N_EPOCHS, type=int, help="")
     parser.add_argument('--epoch_decay', default=EPOCH_DECAY, type=int, help="")
     parser.add_argument('--learning_rate', default=LEARNING_RATE, type=float, help="")
