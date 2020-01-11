@@ -1,4 +1,4 @@
-from constants import DOMAIN_A_FOLDER, DOMAIN_B_FOLDER
+from constants import DOMAIN_A_FOLDER, DOMAIN_B_FOLDER, DOMAIN_B_BASE_FOLDER
 from data.datasets_downloader import download_celeba, download_cartoonset10k
 from services import create_folder_if_not_exist
 
@@ -10,7 +10,7 @@ def prepare_data_folders():
 
 def main():
     prepare_data_folders()
-    download_celeba(DOMAIN_B_FOLDER)
+    download_celeba(DOMAIN_B_BASE_FOLDER)
     download_cartoonset10k()
 
 
