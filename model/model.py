@@ -1,4 +1,6 @@
 import itertools
+from collections import OrderedDict
+
 import torch
 from torch.utils.data import DataLoader
 
@@ -44,8 +46,8 @@ class Model(pl.LightningModule):
         self.D_B = Discriminator(self.input_shape)
 
         # Adversarial ground truths
-        self.valid = torch.ones((self.batch_size, *self.D_A.output_shape))
-        self.fake = torch.zeros((self.batch_size, *self.D_A.output_shape))
+        self.valid = torch.ones((self.batch_size, *self.D_A.output_shape)).to(device)
+        self.fake = torch.zeros((self.batch_size, *self.D_A.output_shape)).to(device)
 
         # Losses
         self.criterion_GAN = torch.nn.MSELoss()
@@ -106,7 +108,7 @@ class Model(pl.LightningModule):
             # Real loss
             loss_real = self.criterion_GAN(self.D_A(real_A), self.valid)
             # Fake loss
-            loss_fake = self.criterion_GAN(self.D_A(self.fake_A), self.fake)
+            loss_fake = self.criterion_GAN(self.D_A(self.fake_A.detach()), self.fake)
             # Total loss
             loss = (loss_real + loss_fake) / 2
             loss_type = "D_A"
@@ -118,18 +120,18 @@ class Model(pl.LightningModule):
             # Real loss
             loss_real = self.criterion_GAN(self.D_B(real_B), self.valid)
             # Fake loss
-            loss_fake = self.criterion_GAN(self.D_B(self.fake_B), self.fake)
+            loss_fake = self.criterion_GAN(self.D_B(self.fake_B.detach()), self.fake)
             # Total loss
             loss = (loss_real + loss_fake) / 2
             loss_type = "D_B"
 
         tqdm_dict = {f"{loss_type}_loss": loss}
 
-        return {
+        return OrderedDict({
             'loss': loss,
             'progress_bar': tqdm_dict,
             'log': tqdm_dict
-        }
+        })
 
     def validation_step(self, batch, batch_nb):
         loss_data = self.training_step(batch, batch_nb)
