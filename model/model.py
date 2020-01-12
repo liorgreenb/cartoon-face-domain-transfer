@@ -24,13 +24,12 @@ class LambdaLRSteper:
 
 class Model(pl.LightningModule):
 
-    def __init__(self, hparams, device):
+    def __init__(self, hparams, device, G_AB, G_BA):
         super(Model, self).__init__()
 
         self.hparams = hparams
         self.device = device
 
-        self.num_res_blocks = hparams.num_res_blocks
         self.input_shape = hparams.input_shape
         self.learning_rate = hparams.learning_rate
         self.B1 = hparams.b1
@@ -42,8 +41,8 @@ class Model(pl.LightningModule):
         self.lambda_cycle_loss = hparams.lambda_cycle_loss
         self.lambda_identity_loss = hparams.lambda_identity_loss
 
-        self.G_AB = GeneratorResNet(self.input_shape, self.num_res_blocks)
-        self.G_BA = GeneratorResNet(self.input_shape, self.num_res_blocks)
+        self.G_AB = G_AB
+        self.G_BA = G_BA
         self.D_A = Discriminator(self.input_shape)
         self.D_B = Discriminator(self.input_shape)
 
